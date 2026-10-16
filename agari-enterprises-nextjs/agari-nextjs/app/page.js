@@ -15,6 +15,8 @@ import FAQSection from '@/components/FAQSection';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 
+import QuickNavDock from '@/components/QuickNavDock';
+
 export default function HomePage() {
   return (
     <>
@@ -37,6 +39,7 @@ export default function HomePage() {
         <FAQSection />
         <Contact />
       </main>
+      <QuickNavDock />
       <Footer />
     </>
   );
