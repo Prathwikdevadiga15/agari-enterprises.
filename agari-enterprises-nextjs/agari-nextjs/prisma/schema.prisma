@@ -1,0 +1,188 @@
+// Prisma schema for Agari Enterprises PostgreSQL database
+// Specified according to Agari Enterprises Architecture Plan Section 6
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  name        String
+  description String?
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id            String         @id @default(uuid())
+  categoryId    String
+  name          String
+  slug          String         @unique
+  brand         String
+  model         String?
+  description   String?
+  price         Int            // In minor units (paise) or whole INR
+  salePrice     Int?
+  stockQuantity Int            @default(10)
+  warranty      String?        @default("6-month warranty")
+  attrs         Json?          // Key-value specifications
+  note          String?
+  avail         String         @default("In Stock") // "In Stock" | "On Order"
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  category      Category       @relation(fields: [categoryId], references: [id])
+  images        ProductImage[]
+  orderItems    OrderItem[]
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  productId String
+  imageUrl  String
+  altText   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_images")
+}
+
+model Customer {
+  id           String         @id @default(uuid())
+  authUserId   String?        @unique
+  name         String
+  phone        String
+  email        String?
+  address      String?
+  city         String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  orders       Order[]
+  repairTickets RepairTicket[]
+
+  @@map("customers")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderReference  String      @unique // e.g. AG-ORD-2601-842
+  customerId      String?
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  deliveryAddress String
+  city            String?
+  orderStatus     String      @default("confirmed") // pending, confirmed, processing, shipped, delivered, cancelled
+  paymentMethod   String      @default("cod") // cod, upi_on_delivery, store_pickup
+  paymentStatus   String      @default("pending") // pending, paid, refunded
+  subtotal        Int
+  deliveryFee     Int         @default(0)
+  totalAmount     Int
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+  items           OrderItem[]
+  payments        Payment[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String?
+  productName String
+  brand       String
+  category    String?
+  unitPrice   Int      // Snapshot price at purchase time
+  quantity    Int      @default(1)
+  totalPrice  Int
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Payment {
+  id                String   @id @default(uuid())
+  orderId           String
+  provider          String   @default("offline") // razorpay, cash, upi
+  providerReference String?
+  amount            Int
+  currency          String   @default("INR")
+  paymentStatus     String   @default("pending")
+  verifiedAt        DateTime?
+  createdAt         DateTime @default(now())
+
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model RepairTicket {
+  id               String   @id @default(uuid())
+  ticketNumber     String   @unique // e.g. AG-26288-412
+  customerId       String?
+  customerName     String
+  customerPhone    String
+  customerEmail    String?
+  serviceCenter    String   // Surathkal, Mangalore, Moodabidre
+  appliance        String   // TV, Fridge, Washing Machine, AC, etc.
+  brand            String?
+  issueDescription String
+  serviceLocation  String   // Doorstep, Workshop
+  address          String
+  appointmentDate  String?
+  repairStatus     String   @default("requested") // requested, scheduled, diagnosing, awaiting_approval, in_progress, completed, cancelled
+  technicianNotes  String?
+  estimatedCost    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  customer         Customer? @relation(fields: [customerId], references: [id])
+
+  @@map("repair_tickets")
+}
+
+model Enquiry {
+  id         String   @id @default(uuid())
+  name       String
+  phone      String
+  email      String?
+  category   String?
+  message    String
+  resolved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("enquiries")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actor     String   @default("system")
+  action    String
+  details   Json?
+  timestamp DateTime @default(now())
+
+  @@map("audit_logs")
+}

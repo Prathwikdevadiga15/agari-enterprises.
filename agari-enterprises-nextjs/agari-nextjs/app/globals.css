@@ -1,0 +1,325 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  @apply bg-paper text-ink font-body antialiased;
+  line-height: 1.6;
+}
+
+section[id] {
+  scroll-margin-top: 90px;
+}
+
+::selection {
+  background: theme('colors.copper-soft');
+  color: theme('colors.copper-dark');
+}
+
+@layer base {
+  h1, h2, h3, h4 {
+    @apply font-display font-bold tracking-tight;
+    line-height: 1.15;
+  }
+  :focus-visible {
+    outline: 2.5px solid theme('colors.trace');
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* ── layout ── */
+  .container-a {
+    @apply max-w-container mx-auto px-5 sm:px-8;
+  }
+  .section-pad {
+    @apply py-14 sm:py-20 lg:py-24;
+  }
+
+  /* ── eyebrow ── */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-[.76rem] tracking-[.14em] uppercase text-copper-dark mb-3;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply w-2 h-2 rounded-[2px] bg-copper inline-block rotate-45;
+  }
+
+  /* ── buttons ── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-semibold text-[.98rem] px-6 py-3.5 rounded-full
+      border-[1.5px] border-transparent cursor-pointer whitespace-nowrap transition-all duration-200
+      hover:-translate-y-0.5 active:translate-y-0 active:scale-[.97];
+  }
+  .btn-lg {
+    @apply px-7 py-4 text-[1.02rem];
+  }
+  .btn-sm {
+    @apply px-4 py-2 text-[.88rem];
+  }
+  .btn-primary {
+    @apply bg-grad-ink text-panel shadow-[0_14px_28px_-16px_rgba(0,0,0,.55)] hover:shadow-[0_20px_38px_-14px_rgba(0,0,0,.6)];
+  }
+  .btn-copper {
+    @apply bg-grad-copper text-white shadow-glow-copper hover:shadow-[0_24px_46px_-16px_rgba(193,105,43,.6)];
+  }
+  .btn-ghost {
+    @apply bg-transparent text-ink border-line hover:border-ink;
+  }
+  .btn-trace {
+    @apply bg-grad-trace text-white shadow-glow-trace hover:shadow-[0_20px_40px_-14px_rgba(46,107,88,.55)];
+  }
+
+  /* ── cards ── */
+  .card {
+    @apply bg-panel border border-line rounded-md shadow-card;
+  }
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-card-hover;
+  }
+
+  /* ── glass ── */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  .glass-dark {
+    @apply bg-black/30 backdrop-blur-md border border-white/10;
+  }
+  .glass-light {
+    @apply bg-white/70 backdrop-blur-md border border-white/60;
+  }
+
+  /* ── badges ── */
+  .badge {
+    @apply inline-flex items-center gap-1 text-[11px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full;
+  }
+  .badge-stock {
+    @apply badge bg-trace-soft text-trace;
+  }
+  .badge-order {
+    @apply badge bg-copper-soft text-copper-dark;
+  }
+  .badge-gold {
+    @apply badge bg-gold-soft text-copper-dark border border-gold/30;
+  }
+
+  /* ── warranty badge ── */
+  .warranty-badge {
+    @apply inline-flex items-center gap-2 bg-trace-soft text-trace border border-trace rounded-full px-4 py-2 font-mono text-[.8rem] font-semibold;
+  }
+
+  /* ── input fields ── */
+  .field-input {
+    @apply w-full rounded-lg border border-line px-3 py-2.5 bg-panel text-sm transition-colors
+      focus:outline-none focus:border-trace focus:ring-2 focus:ring-trace/20 placeholder:text-ink-faint;
+  }
+  .field-label {
+    @apply text-sm font-semibold mb-1 block text-ink;
+  }
+
+  /* ── divider ── */
+  .section-divider {
+    @apply border-0 border-t border-line my-0;
+  }
+
+  /* ── category pill ── */
+  .cat-pill {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-line
+      bg-panel transition-all duration-200 hover:border-trace hover:text-trace cursor-pointer whitespace-nowrap;
+  }
+  .cat-pill-active {
+    @apply bg-trace text-white border-trace;
+  }
+}
+
+/* ── Reveal on scroll ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Brand marquee ── */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Skeleton shimmer ── */
+.skeleton {
+  background: linear-gradient(90deg, theme('colors.panel-2') 25%, theme('colors.panel') 50%, theme('colors.panel-2') 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Cart badge bump ── */
+.cart-bump {
+  animation: cartBump .35s cubic-bezier(.36,1.8,.4,1);
+}
+@keyframes cartBump {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.55); }
+  100% { transform: scale(1); }
+}
+
+/* ── Header scroll progress ── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, theme('colors.trace'), theme('colors.gold'));
+  z-index: 200;
+  transform-origin: left;
+  transition: transform .1s linear;
+}
+
+/* ── Drawer slide in ── */
+@keyframes drawerIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.drawer-panel {
+  animation: drawerIn .28s cubic-bezier(.16,.8,.24,1) forwards;
+}
+
+/* ── Product card image zoom ── */
+.product-img-wrap {
+  overflow: hidden;
+}
+.product-img-wrap img {
+  transition: transform .4s ease;
+}
+.product-img-wrap:hover img {
+  transform: scale(1.06);
+}
+
+/* ── Autocomplete dropdown ── */
+.autocomplete-item {
+  @apply flex items-center gap-3 px-4 py-2.5 text-sm cursor-pointer transition-colors hover:bg-panel-2;
+}
+.autocomplete-item:last-child {
+  @apply rounded-b-lg;
+}
+
+/* ── Offer banner ── */
+.offer-banner-track {
+  animation: bannerSlide 9s ease-in-out infinite;
+}
+
+/* ── Category nav active underline ── */
+.cat-nav-link {
+  position: relative;
+}
+.cat-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 2px;
+  background: theme('colors.gold');
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .22s ease;
+}
+.cat-nav-link:hover::after,
+.cat-nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* ── Scroll snap category pills ── */
+.pills-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.pills-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Luxury Enterprise 1 Lakh Aesthetic Enhancements ── */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, rgba(232,166,87,0) 0%, rgba(232,166,87,0.3) 50%, rgba(232,166,87,0) 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 3.5s infinite;
+}
+
+.luxury-card {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 0.8, 0.24, 1);
+}
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(232,166,87,0.4), transparent 50%, rgba(46,107,88,0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.luxury-card:hover::before {
+  opacity: 1;
+}
+
+.glass-luxury {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
+
+.glow-copper {
+  box-shadow: 0 0 35px -5px rgba(193, 105, 43, 0.35);
+}
+
+.glow-gold {
+  box-shadow: 0 0 35px -5px rgba(232, 166, 87, 0.4);
+}
+
