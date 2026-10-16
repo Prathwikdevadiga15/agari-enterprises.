@@ -19,7 +19,7 @@ export default function AdminDashboardPage() {
   const [orders, setOrders] = useState([]);
   const [repairs, setRepairs] = useState([]);
   const [products, setProducts] = useState([]);
-  const [enquiries, setEnquiries] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
 
   // New Product Modal State
@@ -32,6 +32,18 @@ export default function AdminDashboardPage() {
     stockQuantity: '10',
     avail: 'In Stock',
     description: '',
+  });
+
+  // Gallery Modal State
+  const [showAddGallery, setShowAddGallery] = useState(false);
+  const [newGalItem, setNewGalItem] = useState({
+    title: '',
+    caption: '',
+    category: 'showroom',
+    imageUrl: '',
+    altText: '',
+    sortOrder: 1,
+    featured: true,
   });
 
   // Check initial authentication
@@ -52,6 +64,8 @@ export default function AdminDashboardPage() {
     checkAuth();
   }, []);
 
+  const [enquiries, setEnquiries] = useState([]);
+
   // Fetch admin data once authenticated
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -59,12 +73,13 @@ export default function AdminDashboardPage() {
     async function fetchData() {
       setLoadingData(true);
       try {
-        const [ovRes, ordRes, repRes, prodRes, enqRes] = await Promise.all([
+        const [ovRes, ordRes, repRes, prodRes, enqRes, galRes] = await Promise.all([
           fetch('/api/admin/overview'),
           fetch('/api/orders?limit=100'),
           fetch('/api/repairs?limit=100'),
           fetch('/api/products?limit=150'),
           fetch('/api/enquiries'),
+          fetch('/api/gallery?all=true'),
         ]);
 
         const ovData = await ovRes.json();
@@ -72,12 +87,14 @@ export default function AdminDashboardPage() {
         const repData = await repRes.json();
         const prodData = await prodRes.json();
         const enqData = await enqRes.json();
+        const galData = await galRes.json();
 
         setOverview(ovData);
         setOrders(ordData.orders || []);
         setRepairs(repData.tickets || []);
         setProducts(prodData.products || []);
         setEnquiries(enqData.enquiries || []);
+        setGallery(galData.images || []);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       } finally {
@@ -87,6 +104,63 @@ export default function AdminDashboardPage() {
 
     fetchData();
   }, [isAuthenticated]);
+
+  // Gallery handlers
+  async function handleToggleGallery(id, currentActive) {
+    try {
+      const res = await fetch(`/api/admin/gallery/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !currentActive }),
+      });
+      if (res.ok) {
+        setGallery((prev) =>
+          prev.map((g) => (g.id === id ? { ...g, isActive: !currentActive } : g))
+        );
+      }
+    } catch (err) {
+      alert('Failed to update gallery image');
+    }
+  }
+
+  async function handleDeleteGallery(id) {
+    if (!confirm('Are you sure you want to remove this image from the showcase?')) return;
+    try {
+      const res = await fetch(`/api/admin/gallery/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setGallery((prev) => prev.filter((g) => g.id !== id));
+      }
+    } catch (err) {
+      alert('Failed to delete gallery image');
+    }
+  }
+
+  async function handleAddGallerySubmit(e) {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/admin/gallery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newGalItem),
+      });
+      if (res.ok) {
+        const { image } = await res.json();
+        setGallery((prev) => [...prev, image]);
+        setShowAddGallery(false);
+        setNewGalItem({
+          title: '',
+          caption: '',
+          category: 'showroom',
+          imageUrl: '',
+          altText: '',
+          sortOrder: gallery.length + 1,
+          featured: true,
+        });
+      }
+    } catch (err) {
+      alert('Failed to add gallery image');
+    }
+  }
 
   // Handle Login
   async function handleLogin(e) {
@@ -285,6 +359,7 @@ export default function AdminDashboardPage() {
             { id: 'orders', label: `Orders (${orders.length})` },
             { id: 'repairs', label: `Repair Tickets (${repairs.length})` },
             { id: 'products', label: `Products & Stock (${products.length})` },
+            { id: 'gallery', label: `Showcase Gallery (${gallery.length})` },
             { id: 'enquiries', label: `Enquiries (${enquiries.length})` },
             { id: 'reports', label: 'Reports & CSV Export' },
           ].map((tab) => (
@@ -659,6 +734,100 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Showcase Gallery Tab */}
+        {activeTab === 'gallery' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-paper/50 p-4 rounded-2xl border border-line">
+              <div>
+                <h3 className="font-display font-bold text-lg text-ink">
+                  Founder Showcase &amp; Photo Marquee
+                </h3>
+                <p className="text-xs text-ink-soft">
+                  Manage photos displayed in the continuously moving marquee below the founder's message. Toggle visibility, edit order, or add real branch photos.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddGallery(true)}
+                className="btn btn-trace !rounded-xl !text-xs !py-2.5 !px-4 flex items-center gap-2"
+              >
+                <span>+</span> Add Showcase Image
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {gallery.map((item) => (
+                <div
+                  key={item.id}
+                  className={`bg-paper border rounded-2xl overflow-hidden flex flex-col transition-all ${
+                    item.isActive ? 'border-line shadow-sm' : 'border-line/40 opacity-60'
+                  }`}
+                >
+                  <div className="relative aspect-video bg-sand/30 overflow-hidden group">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.alt || item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-2 left-2 flex gap-1">
+                      <span className="text-[10px] font-semibold bg-ink/80 text-white px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        {item.category}
+                      </span>
+                      {item.featured && (
+                        <span className="text-[10px] font-semibold bg-accent-primary text-white px-2 py-0.5 rounded-full">
+                          ★ Featured
+                        </span>
+                      )}
+                    </div>
+                    <div className="absolute top-2 right-2">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        item.isActive ? 'bg-emerald-500/90 text-white' : 'bg-rose-500/90 text-white'
+                      }`}>
+                        {item.isActive ? 'Visible' : 'Hidden'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between text-[11px] text-ink-faint mb-1">
+                        <span>Order #{item.sortOrder || 0}</span>
+                        <span className="truncate max-w-[120px]">{item.imageUrl}</span>
+                      </div>
+                      <h4 className="font-display font-bold text-sm text-ink mb-1">{item.title}</h4>
+                      {item.caption && (
+                        <p className="text-xs text-ink-soft line-clamp-2 mb-3">{item.caption}</p>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 pt-3 border-t border-line/50 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleGallery(item.id, item.isActive)}
+                        className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                          item.isActive
+                            ? 'bg-sand/60 text-ink hover:bg-sand'
+                            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                        }`}
+                      >
+                        {item.isActive ? 'Hide' : 'Publish'}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteGallery(item.id)}
+                        className="px-3 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Add Product Modal */}
@@ -759,6 +928,148 @@ export default function AdminDashboardPage() {
                 </button>
                 <button type="submit" className="flex-1 btn btn-trace !rounded-xl">
                   Save Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Showcase Image Modal */}
+      {showAddGallery && (
+        <div className="fixed inset-0 bg-ink/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-panel border border-line rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4 pb-2 border-b border-line">
+              <h3 className="font-display font-bold text-lg text-ink">Add Showcase Image</h3>
+              <button
+                type="button"
+                onClick={() => setShowAddGallery(false)}
+                className="text-ink-faint hover:text-ink text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAddGallerySubmit} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold text-ink mb-1">Photo Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={newGalleryItem.title}
+                  onChange={(e) => setNewGalleryItem({ ...newGalleryItem, title: e.target.value })}
+                  placeholder="e.g. Surathkal Flagship Showroom"
+                  className="w-full bg-paper border border-line rounded-xl px-3 py-2 text-ink"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-ink mb-1">Caption / Description</label>
+                <input
+                  type="text"
+                  value={newGalleryItem.caption}
+                  onChange={(e) => setNewGalleryItem({ ...newGalleryItem, caption: e.target.value })}
+                  placeholder="e.g. Main display featuring living sets & premium cooling"
+                  className="w-full bg-paper border border-line rounded-xl px-3 py-2 text-ink"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-ink mb-1">Category</label>
+                  <select
+                    value={newGalleryItem.category}
+                    onChange={(e) => setNewGalleryItem({ ...newGalleryItem, category: e.target.value })}
+                    className="w-full bg-paper border border-line rounded-xl px-3 py-2 text-ink"
+                  >
+                    <option value="Showroom">Showroom &amp; Branch</option>
+                    <option value="Living">Living Room</option>
+                    <option value="Bedroom">Bedroom Sets</option>
+                    <option value="Dining">Dining Sets</option>
+                    <option value="Appliances">Appliances &amp; TV</option>
+                    <option value="Kitchen">Kitchen Utensils</option>
+                    <option value="Service">Service Center</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-ink mb-1">Sort Order</label>
+                  <input
+                    type="number"
+                    value={newGalleryItem.sortOrder}
+                    onChange={(e) => setNewGalleryItem({ ...newGalleryItem, sortOrder: parseInt(e.target.value) || 0 })}
+                    className="w-full bg-paper border border-line rounded-xl px-3 py-2 text-ink"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-ink mb-1">Quick Select Real Photo Asset</label>
+                <select
+                  value={newGalleryItem.imageUrl}
+                  onChange={(e) => setNewGalleryItem({ ...newGalleryItem, imageUrl: e.target.value })}
+                  className="w-full bg-paper border border-line rounded-xl px-3 py-2 text-ink font-mono text-[11px]"
+                >
+                  <option value="/images/gallery/01-surathkal-storefront.jpg">01-surathkal-storefront.jpg</option>
+                  <option value="/images/gallery/02-interior-electronics.jpg">02-interior-electronics.jpg</option>
+                  <option value="/images/gallery/03-dining-sets.jpg">03-dining-sets.jpg</option>
+                  <option value="/images/gallery/04-refrigerator-wall.jpg">04-refrigerator-wall.jpg</option>
+                  <option value="/images/gallery/05-wooden-cots.jpg">05-wooden-cots.jpg</option>
+                  <option value="/images/gallery/06-sofa-lounge.jpg">06-sofa-lounge.jpg</option>
+                  <option value="/images/gallery/07-kitchen-chimney.jpg">07-kitchen-chimney.jpg</option>
+                  <option value="/images/gallery/08-service-center.jpg">08-service-center.jpg</option>
+                  <option value="/images/gallery/09-moodabidri-branch.jpg">09-moodabidri-branch.jpg</option>
+                  <option value="/images/gallery/10-scan-share.jpg">10-scan-share.jpg</option>
+                  <option value="/images/categories/01-living-room.jpg">01-living-room.jpg</option>
+                  <option value="/images/categories/04-appliances.jpg">04-appliances.jpg</option>
+                  <option value="/images/categories/05-kitchen.jpg">05-kitchen.jpg</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-ink mb-1">Or Custom Image URL / Path</label>
+                <input
+                  type="text"
+                  value={newGalleryItem.imageUrl}
+                  onChange={(e) => setNewGalleryItem({ ...newGalleryItem, imageUrl: e.target.value })}
+                  placeholder="/images/gallery/..."
+                  className="w-full bg-paper border border-line rounded-xl px-3 py-2 text-ink font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-ink mb-1">Alt Text</label>
+                <input
+                  type="text"
+                  value={newGalleryItem.alt}
+                  onChange={(e) => setNewGalleryItem({ ...newGalleryItem, alt: e.target.value })}
+                  placeholder="Accessible descriptive text..."
+                  className="w-full bg-paper border border-line rounded-xl px-3 py-2 text-ink"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="galleryFeatured"
+                  checked={newGalleryItem.featured}
+                  onChange={(e) => setNewGalleryItem({ ...newGalleryItem, featured: e.target.checked })}
+                  className="rounded border-line text-accent-primary"
+                />
+                <label htmlFor="galleryFeatured" className="font-semibold text-ink">
+                  Mark as Featured in Marquee
+                </label>
+              </div>
+
+              <div className="pt-3 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddGallery(false)}
+                  className="flex-1 btn btn-panel border border-line !rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 btn btn-trace !rounded-xl">
+                  Add to Gallery
                 </button>
               </div>
             </form>

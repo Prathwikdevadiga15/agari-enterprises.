@@ -22,6 +22,12 @@ export const SERVICE_CENTERS = {
   Moodabidre: { whatsapp: '919449866081', display: '94498 66081' },
 };
 
+export const OFFERS = [
+  { id: 'festive-living', title: 'Festive Living Room Package', discount: 'Up to 25% Off', tag: 'Limited Period', desc: 'Solid wood sofa set + teak center table combination offer' },
+  { id: 'appliance-exchange', title: 'Old Appliance Exchange Bonus', discount: 'Flat ₹1,500 Off', tag: 'Exchange', desc: 'Trade in any old TV, refrigerator or washing machine for instant store credit' },
+  { id: 'zero-delivery', title: 'Zero Delivery Fee Guarantee', discount: '100% Free Delivery', tag: 'Local Districts', desc: 'Free doorstep shipping & careful room installation across Surathkal, Mangalore & Moodabidri' },
+];
+
 export const AGARI_LOCATIONS = [
   { name: 'Surathkal — Navodaya Complex', query: 'Agari Enterprises, Navodaya Complex, Surathkal, Mangaluru, Karnataka' },
   { name: 'Shubagiri', query: 'Agari Enterprises, Shubagiri, Karnataka' },

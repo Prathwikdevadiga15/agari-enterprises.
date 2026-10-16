@@ -47,6 +47,38 @@ export default function ChatWidget() {
     }
   }
 
+  async function sendQuickQuestion(text) {
+    if (loading) return;
+    const next = [...messages, { role: 'user', content: text }];
+    setMessages(next);
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: next }),
+      });
+      const data = await res.json();
+      setMessages((m) => [...m, { role: 'assistant', content: data.reply || 'Sorry, something went wrong.' }]);
+    } catch {
+      setMessages((m) => [
+        ...m,
+        { role: 'assistant', content: `Sorry, I couldn't connect. Please call ${CONFIG.displayPhone} for help.` },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const SUGGESTIONS = [
+    'Book a Repair',
+    'Show Sofas & Cots',
+    'Kitchen Appliances',
+    'Free Delivery Policy?',
+    'Showroom Locations & Hours',
+  ];
+
   return (
     <>
       <button
@@ -87,6 +119,21 @@ export default function ChatWidget() {
                 <p className="bg-panel-2 rounded-lg rounded-bl-sm px-3.5 py-2.5 text-sm text-ink-faint">Typing…</p>
               </div>
             )}
+          </div>
+
+          {/* Quick Suggestions Chips */}
+          <div className="px-3 py-2 border-t border-line/60 bg-paper/40 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            {SUGGESTIONS.map((s, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => sendQuickQuestion(s)}
+                disabled={loading}
+                className="flex-shrink-0 text-[11px] font-medium bg-sand/60 hover:bg-sand text-ink px-2.5 py-1 rounded-full border border-line transition-colors disabled:opacity-50"
+              >
+                {s}
+              </button>
+            ))}
           </div>
 
           <form onSubmit={sendMessage} className="border-t border-line p-3 flex items-center gap-2">

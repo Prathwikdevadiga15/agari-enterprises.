@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import RevealOnScroll from './RevealOnScroll';
+import FounderPhotoMarquee from './FounderPhotoMarquee';
 
 export function Heritage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -210,56 +211,11 @@ export function Heritage() {
 }
 
 export function Proprietor() {
-  const videoRef = useRef(null);
-  const containerRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [isFloating, setIsFloating] = useState(false);
-  const [isTheater, setIsTheater] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play();
-        setIsPlaying(true);
-      } else {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      }
-    }
-  };
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsMuted(videoRef.current.muted);
-    }
-  };
-
-  const cycleSpeed = () => {
-    if (videoRef.current) {
-      const rates = [1, 1.25, 1.5];
-      const nextRate = rates[(rates.indexOf(playbackRate) + 1) % rates.length];
-      videoRef.current.playbackRate = nextRate;
-      setPlaybackRate(nextRate);
-    }
-  };
-
-  const resetPosition = () => {
-    setPosition({ x: 0, y: 0 });
-    setIsFloating(false);
-    setIsTheater(false);
-  };
-
   return (
     <section
       className="relative py-20 sm:py-28 overflow-hidden"
       id="proprietor"
       style={{ background: '#0B1613' }}
-      ref={containerRef}
     >
       {/* ── Rich Layered Background ── */}
       <div
@@ -359,173 +315,9 @@ export function Proprietor() {
           </div>
         </RevealOnScroll>
 
-        {/* ── BELOW THE MESSAGE FROM FOUNDER: VIDEO IN MOVABLE FORMAT ── */}
-        <div className="max-w-4xl mx-auto">
-          {/* Header Bar for Movable Video */}
-          <div className="text-center mb-5">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs font-mono">
-              <span className="text-base">🎬</span> Interactive Movable Video Format
-            </span>
-            <p className="text-xs text-cream/60 font-mono mt-1">
-              Click and drag the video window anywhere on your screen · Pop out to float while browsing
-            </p>
-          </div>
-
-          {/* Movable Framer Motion Container */}
-          <motion.div
-            drag
-            dragElastic={0.12}
-            dragMomentum={false}
-            animate={{ x: position.x, y: position.y }}
-            onDragStart={() => setDragActive(true)}
-            onDragEnd={(_, info) => {
-              setDragActive(false);
-              setPosition((prev) => ({
-                x: prev.x + info.offset.x,
-                y: prev.y + info.offset.y,
-              }));
-            }}
-            className={`relative mx-auto transition-shadow duration-300 ${
-              isTheater ? 'max-w-5xl' : 'max-w-3xl'
-            } ${
-              isFloating
-                ? 'fixed bottom-24 right-6 z-[80] w-[340px] sm:w-[400px] shadow-[0_25px_60px_rgba(0,0,0,0.8)]'
-                : 'w-full'
-            }`}
-          >
-            {/* Ambient Halo */}
-            <div
-              className={`absolute -inset-3 rounded-[2rem] bg-gradient-to-r from-gold/25 via-copper/20 to-gold/25 blur-2xl transition-opacity duration-500 pointer-events-none ${
-                dragActive ? 'opacity-100 scale-102' : 'opacity-60'
-              }`}
-            />
-
-            {/* Main Video Frame */}
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-gold/40 shadow-2xl bg-[#080E0C]">
-              
-              {/* ── DRAGGABLE TOOLBAR / HANDLE (Top Bar) ── */}
-              <div
-                className={`flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-black/90 via-[#101D19] to-black/90 border-b border-gold/30 cursor-grab active:cursor-grabbing select-none ${
-                  dragActive ? 'bg-gold/20' : ''
-                }`}
-                title="Click and drag to move video player anywhere"
-              >
-                <div className="flex items-center gap-2 text-xs font-mono text-gold">
-                  <span className="text-base leading-none">✥</span>
-                  <span className="font-semibold tracking-wider uppercase text-[11px]">
-                    {dragActive ? 'Moving Video...' : 'Drag to Reposition'}
-                  </span>
-                </div>
-
-                {/* Movable Controls */}
-                <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                  {/* Floating Toggle */}
-                  <button
-                    type="button"
-                    onClick={() => setIsFloating(!isFloating)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors flex items-center gap-1 border ${
-                      isFloating
-                        ? 'bg-gold text-black font-semibold border-gold'
-                        : 'bg-white/10 hover:bg-white/20 text-cream border-white/20'
-                    }`}
-                    title={isFloating ? 'Dock back to section' : 'Float on screen while scrolling'}
-                  >
-                    <span>{isFloating ? '📌 Dock' : '🗗 Float'}</span>
-                  </button>
-
-                  {/* Theater Toggle */}
-                  <button
-                    type="button"
-                    onClick={() => setIsTheater(!isTheater)}
-                    className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/10 hover:bg-white/20 text-cream transition-colors border border-white/20 hidden sm:inline-flex"
-                    title={isTheater ? 'Normal width' : 'Cinematic theater view'}
-                  >
-                    {isTheater ? 'Compact' : 'Cinematic'}
-                  </button>
-
-                  {/* Reset Position */}
-                  {(position.x !== 0 || position.y !== 0 || isFloating) && (
-                    <button
-                      type="button"
-                      onClick={resetPosition}
-                      className="px-2 py-1 rounded-md text-[11px] font-mono bg-gold/15 hover:bg-gold/30 text-gold transition-colors border border-gold/30"
-                      title="Reset video position"
-                    >
-                      ↩ Center
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* ── VIDEO PLAYER CANVAS (Natural uncropped aspect ratio) ── */}
-              <div className="relative w-full bg-black flex items-center justify-center overflow-hidden">
-                <video
-                  ref={videoRef}
-                  className="w-full max-h-[580px] object-contain mx-auto"
-                  playsInline
-                  preload="metadata"
-                  controls
-                  poster="/images/founder-portrait.jpeg"
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                >
-                  <source src="/videos/founder-video.mp4" type="video/mp4" />
-                  Your browser does not support HTML5 video.
-                </video>
-
-                {/* Custom Big Play Button Overlay */}
-                {!isPlaying && (
-                  <button
-                    type="button"
-                    onClick={togglePlay}
-                    className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 hover:bg-black/25 transition-all duration-300 text-white group/btn"
-                    aria-label="Play Founder Video"
-                  >
-                    <span className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#E8A657] to-[#C1692B] text-white flex items-center justify-center text-3xl shadow-[0_0_50px_rgba(232,166,87,0.6)] group-hover/btn:scale-110 transition-transform duration-300 pl-1">
-                      ▶
-                    </span>
-                    <span className="mt-3 text-xs font-mono uppercase tracking-[.25em] text-gold drop-shadow-md">
-                      Play Video Message
-                    </span>
-                  </button>
-                )}
-              </div>
-
-              {/* ── BOTTOM INTERACTIVE BAR ── */}
-              <div className="flex flex-wrap items-center justify-between px-4 py-2.5 bg-black/85 backdrop-blur-md border-t border-gold/20 text-xs">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={togglePlay}
-                    className="flex items-center gap-1 px-3 py-1 rounded-md bg-gold text-green-deep font-semibold hover:bg-gold-light transition-colors"
-                  >
-                    {isPlaying ? '⏸ Pause' : '▶ Play'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={toggleMute}
-                    className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-cream transition-colors"
-                    title={isMuted ? 'Unmute' : 'Mute'}
-                  >
-                    {isMuted ? '🔇 Unmute' : '🔊 Mute'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={cycleSpeed}
-                    className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-gold font-mono transition-colors"
-                    title="Playback Speed"
-                  >
-                    {playbackRate}x
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2 text-cream/70 font-mono text-[11px] mt-1 sm:mt-0">
-                  <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-                  <span>Agari Raghavendra Rao · Founder Address</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+        {/* ── BELOW THE MESSAGE FROM FOUNDER: CONTINUOUS MOVING PHOTO GALLERY ── */}
+        <div className="w-full mt-4">
+          <FounderPhotoMarquee />
         </div>
 
         {/* Floating motto below */}

@@ -280,7 +280,175 @@ function buildInitialSeed() {
     },
   ];
 
-  return { categories, products, orders, repairTickets, enquiries, auditLogs };
+  const galleryImages = [
+    {
+      id: 'gal_1',
+      title: 'Surathkal Flagship Showroom',
+      caption: 'Our main showroom opposite Govinda Dasa PU College, serving Surathkal since 1992',
+      category: 'showroom',
+      imageUrl: '/images/gallery/01-surathkal-storefront.jpg',
+      altText: 'Agari Enterprises Surathkal Storefront',
+      sortOrder: 1,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_2',
+      title: 'Handcrafted Teak Living Room Sets',
+      caption: 'Custom carved solid teakwood center tables and sofa setups built for coastal homes',
+      category: 'furniture',
+      imageUrl: '/images/categories/center-table.jpg',
+      altText: 'Teakwood Living Room Center Table & Furniture',
+      sortOrder: 2,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_3',
+      title: 'Smart 4K LED & OLED Displays',
+      caption: 'Authorized retail display of premium Sony, Samsung, LG and Mi smart home entertainment',
+      category: 'electronics',
+      imageUrl: '/images/categories/television.jpg',
+      altText: 'Smart 4K Television Display at Agari',
+      sortOrder: 3,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_4',
+      title: 'Solid Wood 6-Seater Family Dining',
+      caption: 'Durable polished teak and rosewood dining table assemblies built for generations',
+      category: 'furniture',
+      imageUrl: '/images/categories/dining-table.jpg',
+      altText: 'Solid Wood Dining Table Set',
+      sortOrder: 4,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_5',
+      title: 'Inverter Double Door Refrigerators',
+      caption: 'Energy-saving frost-free cooling appliances with complimentary doorstep delivery',
+      category: 'electronics',
+      imageUrl: '/images/categories/refrigerator.jpg',
+      altText: 'Double Door Refrigerator on Display',
+      sortOrder: 5,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_6',
+      title: 'Prestige Tower Branch — Mangaluru',
+      caption: 'Convenient central branch for urban electronics sales, appliance consultations and service',
+      category: 'showroom',
+      imageUrl: '/images/gallery/03-prestige-tower-branch.jpg',
+      altText: 'Agari Enterprises Prestige Tower Branch',
+      sortOrder: 6,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_7',
+      title: 'Solid Timber Queen & King Cots',
+      caption: 'Heavy-duty termite-resistant wooden beds with optional hydraulic under-bed storage',
+      category: 'furniture',
+      imageUrl: '/images/categories/bed-and-cot.jpg',
+      altText: 'Solid Wood Bed and Cot',
+      sortOrder: 7,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_8',
+      title: 'Smart Inverter Washing Machines',
+      caption: 'Front and top load washing machines from Bosch, IFB and LG with 6-month store warranty',
+      category: 'electronics',
+      imageUrl: '/images/categories/washing-machine.jpg',
+      altText: 'Smart Washing Machine Display',
+      sortOrder: 8,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_9',
+      title: 'Moodabidre Furniture & Appliance Center',
+      caption: 'Full-service showroom catering to Moodabidre, Alangar and surrounding rural households',
+      category: 'showroom',
+      imageUrl: '/images/gallery/04-moodabidre-showroom.jpg',
+      altText: 'Agari Enterprises Moodabidre Showroom',
+      sortOrder: 9,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_10',
+      title: 'Heavy Duty 750W Kitchen Mixers',
+      caption: 'Commercial-grade motors and stainless steel jars designed for authentic Tulunadu recipes',
+      category: 'kitchen',
+      imageUrl: '/images/categories/mixer.jpg',
+      altText: 'Heavy Duty Kitchen Mixer Grinder',
+      sortOrder: 10,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_11',
+      title: 'High-Efficiency Inverter ACs',
+      caption: 'Beat coastal heat with energy-efficient 1.5 & 2-ton split air conditioners',
+      category: 'electronics',
+      imageUrl: '/images/categories/ac.jpg',
+      altText: 'Inverter Split Air Conditioner',
+      sortOrder: 11,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_12',
+      title: 'Multi-Stage RO + UV Water Purifiers',
+      caption: 'Certified water purification appliances with genuine filter replacements and service',
+      category: 'kitchen',
+      imageUrl: '/images/categories/water-purifier.jpg',
+      altText: 'Water Purifier RO UV System',
+      sortOrder: 12,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_13',
+      title: 'Evening Showroom Illumination',
+      caption: 'Our flagship showroom lit up with festive displays and customer welcome arrangements',
+      category: 'showroom',
+      imageUrl: '/images/gallery/02-showroom-evening.jpg',
+      altText: 'Showroom in the evening',
+      sortOrder: 13,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_14',
+      title: 'Custom Wooden Wardrobes & Storage',
+      caption: 'Termite-resistant seasoned timber wardrobes with full-length mirrors and locking drawers',
+      category: 'furniture',
+      imageUrl: '/images/categories/wooden-almirah.jpg',
+      altText: 'Wooden Almirah and Wardrobe',
+      sortOrder: 14,
+      isActive: true,
+      featured: true,
+    },
+    {
+      id: 'gal_15',
+      title: 'Convection Microwave & Baking Ovens',
+      caption: 'Multi-stage cooking and instant reheating ovens with digital touch controls',
+      category: 'kitchen',
+      imageUrl: '/images/categories/oven.jpg',
+      altText: 'Convection Microwave Oven',
+      sortOrder: 15,
+      isActive: true,
+      featured: true,
+    },
+  ];
+
+  return { categories, products, orders, repairTickets, enquiries, auditLogs, galleryImages };
 }
 
 function loadDatabase() {
@@ -291,6 +459,10 @@ function loadDatabase() {
     try {
       const content = fs.readFileSync(DB_FILE, 'utf-8');
       memoryDb = JSON.parse(content);
+      if (!memoryDb.galleryImages || memoryDb.galleryImages.length === 0) {
+        memoryDb.galleryImages = buildInitialSeed().galleryImages;
+        saveDatabase(memoryDb);
+      }
       return memoryDb;
     } catch (e) {
       console.warn('Failed to parse agari-db.json, re-seeding:', e);
@@ -720,4 +892,177 @@ export const db = {
 
     return '';
   },
+
+  // ──────────────────────────────────────────
+  // GALLERY MANAGEMENT APIs
+  // ──────────────────────────────────────────
+
+  getGalleryImages({ category, onlyActive = true } = {}) {
+    const data = loadDatabase();
+    let images = data.galleryImages || [];
+    if (onlyActive) {
+      images = images.filter((img) => img.isActive !== false);
+    }
+    if (category && category !== 'all') {
+      images = images.filter((img) => img.category?.toLowerCase() === category.toLowerCase());
+    }
+    return images.sort((a, b) => (a.sortOrder || 999) - (b.sortOrder || 999));
+  },
+
+  getGalleryImageById(id) {
+    const data = loadDatabase();
+    return (data.galleryImages || []).find((img) => img.id === id) || null;
+  },
+
+  addGalleryImage(imageData) {
+    const data = loadDatabase();
+    data.galleryImages = data.galleryImages || [];
+    const maxOrder = data.galleryImages.reduce((max, img) => Math.max(max, img.sortOrder || 0), 0);
+
+    const newImage = {
+      id: generateId('gal'),
+      title: imageData.title || 'Agari Enterprises Gallery Item',
+      caption: imageData.caption || '',
+      category: imageData.category || 'showroom',
+      imageUrl: imageData.imageUrl,
+      altText: imageData.altText || imageData.title || 'Agari Enterprises Gallery Photo',
+      sortOrder: imageData.sortOrder != null ? Number(imageData.sortOrder) : maxOrder + 1,
+      isActive: imageData.isActive !== false,
+      featured: Boolean(imageData.featured),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    data.galleryImages.push(newImage);
+    saveDatabase(data);
+    return newImage;
+  },
+
+  updateGalleryImage(id, updates) {
+    const data = loadDatabase();
+    data.galleryImages = data.galleryImages || [];
+    const idx = data.galleryImages.findIndex((img) => img.id === id);
+    if (idx === -1) return null;
+
+    data.galleryImages[idx] = {
+      ...data.galleryImages[idx],
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+
+    saveDatabase(data);
+    return data.galleryImages[idx];
+  },
+
+  deleteGalleryImage(id) {
+    const data = loadDatabase();
+    data.galleryImages = data.galleryImages || [];
+    const initialLen = data.galleryImages.length;
+    data.galleryImages = data.galleryImages.filter((img) => img.id !== id);
+    if (data.galleryImages.length === initialLen) return false;
+    saveDatabase(data);
+    return true;
+  },
+
+  reorderGalleryImages(orderedIds) {
+    if (!Array.isArray(orderedIds)) return false;
+    const data = loadDatabase();
+    data.galleryImages = data.galleryImages || [];
+
+    orderedIds.forEach((id, index) => {
+      const img = data.galleryImages.find((item) => item.id === id);
+      if (img) {
+        img.sortOrder = index + 1;
+        img.updatedAt = new Date().toISOString();
+      }
+    });
+
+    saveDatabase(data);
+    return true;
+  },
+
+  // ──────────────────────────────────────────
+  // PRODUCT HELPERS & AVAILABILITY
+  // ──────────────────────────────────────────
+
+  getFeaturedProducts(limit = 8) {
+    const data = loadDatabase();
+    return data.products
+      .filter((p) => p.isActive !== false && p.price > 5000)
+      .slice(0, limit);
+  },
+
+  getRelatedProducts(productId, limit = 4) {
+    const data = loadDatabase();
+    const target = data.products.find((p) => p.id === productId || p.slug === productId);
+    if (!target) return [];
+
+    return data.products
+      .filter(
+        (p) =>
+          p.id !== target.id &&
+          p.isActive !== false &&
+          (p.categoryId === target.categoryId || p.categoryGroup === target.categoryGroup)
+      )
+      .slice(0, limit);
+  },
+
+  checkProductAvailability(idOrSlug) {
+    const prod = this.getProductById(idOrSlug);
+    if (!prod) return null;
+    return {
+      id: prod.id,
+      slug: prod.slug,
+      name: prod.name,
+      avail: prod.avail,
+      inStock: prod.avail === 'In Stock' && prod.stockQuantity > 0,
+      stockQuantity: prod.stockQuantity,
+      warranty: prod.warranty,
+    };
+  },
+
+  // ──────────────────────────────────────────
+  // CART & WISHLIST VALIDATION
+  // ──────────────────────────────────────────
+
+  validateCartItems(items = []) {
+    const data = loadDatabase();
+    const validatedItems = [];
+    let subtotal = 0;
+
+    for (const item of items) {
+      const prod = data.products.find((p) => p.id === item.id || p.slug === item.id || p.id === item.productId);
+      if (!prod || prod.isActive === false) continue;
+
+      const quantity = Math.max(1, Math.min(Number(item.quantity || item.qty || 1), prod.stockQuantity || 10));
+      const unitPrice = prod.price;
+      const totalPrice = unitPrice * quantity;
+      subtotal += totalPrice;
+
+      validatedItems.push({
+        id: prod.id,
+        slug: prod.slug,
+        name: prod.name,
+        brand: prod.brand,
+        category: prod.categoryName,
+        imageUrl: prod.imageUrl,
+        unitPrice,
+        quantity,
+        totalPrice,
+        inStock: prod.stockQuantity >= quantity,
+      });
+    }
+
+    const deliveryFee = 0; // Free delivery in Dakshina Kannada as per Agari Enterprises policy
+    const totalAmount = subtotal + deliveryFee;
+
+    return {
+      items: validatedItems,
+      subtotal,
+      deliveryFee,
+      totalAmount,
+      currency: 'INR',
+    };
+  },
 };
+
